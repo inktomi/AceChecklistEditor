@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.screenshot)
 }
 
 kotlin {
@@ -92,12 +91,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.androidx.ui.tooling)
 }
 
 compose.desktop {

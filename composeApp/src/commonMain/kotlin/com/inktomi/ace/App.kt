@@ -15,7 +15,6 @@ import com.inktomi.ace.vm.ChecklistViewModel
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @Composable
 @Preview
 fun App(modifier: Modifier = Modifier) {

@@ -34,3 +34,4 @@ plugins {
 
 include(":composeApp")
 include(":model")
+include(":screenshot-tests")
