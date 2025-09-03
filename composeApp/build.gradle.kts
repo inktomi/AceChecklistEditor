@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.screenshot)
 }
 
 kotlin {
@@ -56,6 +58,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -89,6 +92,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
