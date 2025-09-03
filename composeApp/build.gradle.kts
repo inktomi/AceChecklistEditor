@@ -42,6 +42,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(project(":model"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
