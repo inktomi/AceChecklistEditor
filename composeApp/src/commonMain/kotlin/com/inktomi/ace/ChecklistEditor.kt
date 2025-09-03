@@ -8,77 +8,90 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.inktomi.ace.model.AceChecklist
+import com.inktomi.ace.model.Aircraft
 import com.inktomi.ace.model.Checklist
 import com.inktomi.ace.model.ChecklistGroup
 import com.inktomi.ace.model.ChecklistItem
 import com.inktomi.ace.repository.InMemoryChecklistRepository
+import com.inktomi.ace.ui.theme.ACEChecklistEditorTheme
 import com.inktomi.ace.vm.ChecklistViewModel
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChecklistEditor(
-    viewModel: ChecklistViewModel
+    viewModel: ChecklistViewModel,
+    modifier: Modifier = Modifier
 ) {
     val checklists by viewModel.checklists.collectAsState()
+    val title = checklists.firstOrNull()?.aircraft?.name ?: "Checklist"
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        LazyColumn(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
-            checklists.forEach { aceChecklist ->
-                aceChecklist.groups.forEach { group ->
-                    item {
-                        Text(
-                            text = group.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                    group.checklists.forEach { checklist ->
-                        item {
-                            Text(
-                                text = checklist.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp)
-                            )
-                        }
-                        items(checklist.items) { item ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(item.challenge)
-                                Text(item.response ?: "")
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(title = { Text(title) })
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
+            LazyColumn(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
+                checklists.forEach { aceChecklist ->
+                    aceChecklist.groups.forEach { group ->
+                        group.checklists.forEach { checklist ->
+                            item {
+                                Text(
+                                    text = checklist.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp)
+                                )
+                            }
+                            items(checklist.items) { item ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(item.challenge)
+                                    Text(item.response ?: "")
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Button(
-            onClick = {
-                viewModel.addChecklist(
-                    AceChecklist(
-                        groups = persistentListOf(
-                            ChecklistGroup(
-                                title = "New Checklist Group",
-                                checklists = persistentListOf(
-                                    Checklist(
-                                        name = "New Checklist",
-                                        items = persistentListOf(
-                                            ChecklistItem(
-                                                challenge = "New Challenge",
-                                                response = "New Response"
+            Button(
+                onClick = {
+                    viewModel.addChecklist(
+                        AceChecklist(
+                            aircraft = Aircraft("New Aircraft"),
+                            groups = persistentListOf(
+                                ChecklistGroup(
+                                    title = "New Checklist Group",
+                                    checklists = persistentListOf(
+                                        Checklist(
+                                            name = "New Checklist",
+                                            items = persistentListOf(
+                                                ChecklistItem(
+                                                    challenge = "New Challenge",
+                                                    response = "New Response"
+                                                )
                                             )
                                         )
                                     )
@@ -86,11 +99,11 @@ fun ChecklistEditor(
                             )
                         )
                     )
-                )
-            },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Text("Add Checklist")
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Add Checklist")
+            }
         }
     }
 }
@@ -99,32 +112,19 @@ fun ChecklistEditor(
 @Composable
 fun ChecklistEditorPreview() {
     val checklist = AceChecklist(
+        aircraft = Aircraft("Cessna 172", "N12345"),
         groups = persistentListOf(
             ChecklistGroup(
-                title = "Cessna 172",
+                title = "Pre-Flight Inspection",
                 checklists = persistentListOf(
                     Checklist(
-                        name = "Pre-Flight Inspection",
+                        name = "Cockpit",
                         items = persistentListOf(
-                            ChecklistItem("Cockpit", "CHECK"),
-                            ChecklistItem("Fuselage", "CHECK"),
-                            ChecklistItem("Empennage", "CHECK"),
-                            ChecklistItem("Right Wing", "CHECK"),
-                            ChecklistItem("Nose", "CHECK"),
-                            ChecklistItem("Left Wing", "CHECK")
-                        )
-                    ),
-                    Checklist(
-                        name = "Before Engine Start",
-                        items = persistentListOf(
-                            ChecklistItem("Pre-flight inspection", "COMPLETE"),
-                            ChecklistItem("Passenger briefing", "COMPLETE"),
-                            ChecklistItem("Seats, belts, rudders", "ADJUST & LOCK"),
-                            ChecklistItem("Avionics", "OFF"),
-                            ChecklistItem("Brakes", "TEST & SET"),
-                            ChecklistItem("Fuel selector", "BOTH"),
-                            ChecklistItem("Fuel shutoff valve", "ON"),
-                            ChecklistItem("Circuit breakers", "CHECK IN")
+                            ChecklistItem("Parking Brake", "SET"),
+                            ChecklistItem("Ignition", "OFF"),
+                            ChecklistItem("Master Switch", "ON"),
+                            ChecklistItem("Fuel Quantity", "CHECK"),
+                            ChecklistItem("Master Switch", "OFF")
                         )
                     )
                 )
@@ -133,5 +133,7 @@ fun ChecklistEditorPreview() {
     )
     val repository = InMemoryChecklistRepository(listOf(checklist))
     val viewModel = ChecklistViewModel(repository)
-    ChecklistEditor(viewModel)
+    ACEChecklistEditorTheme {
+        ChecklistEditor(viewModel)
+    }
 }
