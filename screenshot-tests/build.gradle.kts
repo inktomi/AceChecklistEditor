@@ -32,3 +32,9 @@ dependencies {
     screenshotTestImplementation(libs.junit)
     screenshotTestImplementation(libs.androidx.ui.test.junit4)
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    }
+}

@@ -55,3 +55,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    }
+}
